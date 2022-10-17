@@ -59,7 +59,7 @@ jamfHelperPID=$!
 ####################################################
 ### Try to use credentials passed from JSS first ###
 ####################################################
-echo "$PW" | sudo /Applications/Install\ macOS\ Monterey.app/Contents/Resources/startosinstall --agreetolicense --forcequitapps --stdinpass --user $UN && exit 0 || kill $jamfHelperPID && echo "Credentials passed from the JSS could not be authenticated on this Mac." && osascript -e 'text returned of (display dialog "The macOS upgrade requires you to authenticate with your Mac login credentials." with title "macOS Software Update" buttons {"OK"} default button 1 giving up after 180)'
+echo "$PW" | /Applications/Install\ macOS\ Monterey.app/Contents/Resources/startosinstall --agreetolicense --forcequitapps --stdinpass --user $UN && exit 0 || kill $jamfHelperPID && echo "Credentials passed from the JSS could not be authenticated on this Mac." && osascript -e 'text returned of (display dialog "The macOS upgrade requires you to authenticate with your Mac login credentials." with title "macOS Software Update" buttons {"OK"} default button 1 giving up after 180)'
 
 ##########################
 ### Obtain credentials ###
@@ -89,7 +89,7 @@ else
 	########################################################################
 	### Prompt user for credentials if the credentials passed don't work ###
 	########################################################################
-	echo "$userPW" | sudo /Applications/Install\ macOS\ Monterey.app/Contents/Resources/startosinstall --agreetolicense --forcequitapps --stdinpass --user $(stat -f %Su /dev/console) && exit 0 || kill $jamfHelperPID && echo "Something went wrong" && osascript -e 'text returned of (display dialog "Something went wrong. Please try again." with title "macOS Software Update" buttons {"OK"} default button 1 giving up after 180)' && exit 1
+	echo "$userPW" | /Applications/Install\ macOS\ Monterey.app/Contents/Resources/startosinstall --agreetolicense --forcequitapps --stdinpass --user $(stat -f %Su /dev/console) && exit 0 || kill $jamfHelperPID && echo "Something went wrong" && osascript -e 'text returned of (display dialog "Something went wrong. Please try again." with title "macOS Software Update" buttons {"OK"} default button 1 giving up after 180)' && exit 1
 	
 	exit 0
 fi
