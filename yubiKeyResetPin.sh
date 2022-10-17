@@ -109,8 +109,3 @@ do
 		osascript -e "display dialog \"The new pin you provided was not 8 characters long!\n\nThe pin must contain:\n-A capital letter\n-A lowercase letter\n-A number\n\nAdditionally:\n-The pin MUST be exactly 8 characters\n-The pin CANNOT contain a special character\" buttons {\"OK\"} default button \"OK\" with title \"$title\""
 	fi
 done
-
-###################################
-### Change userPinNew Variable. ###
-###################################
-userPinNew="NiceTry"
