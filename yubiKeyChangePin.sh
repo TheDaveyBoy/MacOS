@@ -128,9 +128,3 @@ else
 	title='SmartCard/YubiKey Pin Cannot Be Verified.'
 	osascript -e "display dialog \"The pin you entered did not match the current pin on the SmartCard/YubiKey!\n\nFor security reasons, this will count as a failed attempt against your 5 allowed attempts.\n\nIf you continue to have issues, please contact Able I.T. to reset your pin.\" buttons {\"End\"} default button \"End\" with title \"$title\""
 fi
-
-###################################################
-### Change userPinOld and userPinNew variables. ###
-###################################################
-userPinOld="NiceTry"
-userPinNew="NiceTry"
