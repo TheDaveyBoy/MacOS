@@ -66,10 +66,10 @@ echo "$PW" | /Applications/Install\ macOS\ Monterey.app/Contents/Resources/start
 ##########################
 userPW=$(osascript -e '
 display dialog "Please enter your Mac login password." default answer "" with title "Software Update User Authentication" buttons {"Stop","Submit"} default button "Submit" with hidden answer giving up after 180
-	if button returned of result is "Submit" then
-		set userPW to the (text returned of the result)
-	else
-		set userPW to "Stop"
+if button returned of result is "Submit" then
+	set userPW to the (text returned of the result)
+else
+	set userPW to "Stop"
 end if')
 
 #####################################################
