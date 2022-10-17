@@ -37,13 +37,12 @@ heading="Please wait as we prepare this Mac for macOS $6..."
 ### Title to be used for jamfHelper ###
 #######################################
 description="This process will take approximately 15-30 minutes.
-
 Once completed, the Mac will reboot and begin the upgrade."
 
 ######################################
 ### Icon to be used for jamfHelper ###
 ######################################
-icon=/Applications/Install\ macOS\ Monterey.app/Contents/Resources/InstallAssistant.icns
+icon=/Applications/"$7"/Contents/Resources/InstallAssistant.icns
 
 #########################
 ### Launch jamfHelper ###
@@ -59,7 +58,7 @@ jamfHelperPID=$!
 ####################################################
 ### Try to use credentials passed from JSS first ###
 ####################################################
-echo "$PW" | /Applications/Install\ macOS\ Monterey.app/Contents/Resources/startosinstall --agreetolicense --forcequitapps --stdinpass --user $UN && exit 0 || kill $jamfHelperPID && echo "Credentials passed from the JSS could not be authenticated on this Mac." && osascript -e 'text returned of (display dialog "The macOS upgrade requires you to authenticate with your Mac login credentials." with title "macOS Software Update" buttons {"OK"} default button 1 giving up after 180)'
+echo "$PW" | /Applications/"$7"/Contents/Resources/startosinstall --agreetolicense --forcequitapps --stdinpass --user $UN && exit 0 || kill $jamfHelperPID && echo "Credentials passed from the JSS could not be authenticated on this Mac." && osascript -e 'text returned of (display dialog "The macOS upgrade requires you to authenticate with your Mac login credentials." with title "macOS Software Update" buttons {"OK"} default button 1 giving up after 180)'
 
 ##########################
 ### Obtain credentials ###
@@ -82,13 +81,13 @@ else
 	###############################
 	### Launch jamfHelper again ###
 	###############################
-	/Library/Application\ Support/JAMF/bin/jamfHelper.app/Contents/MacOS/jamfHelper -windowType utility -title "macOS Software Update" -icon "$icon" -heading "$heading" -description "$description" &
+	/Library/Application\ Support/JAMF/bin/jamfHelper.app/Contents/MacOS/jamfHelper -windowType fs -title "macOS Software Update" -icon "$icon" -heading "$heading" -description "$description" &
 
 	jamfHelperPID=$!
 	
 	########################################################################
 	### Prompt user for credentials if the credentials passed don't work ###
 	########################################################################
-	echo "$userPW" | /Applications/Install\ macOS\ Monterey.app/Contents/Resources/startosinstall --agreetolicense --forcequitapps --stdinpass --user $(stat -f %Su /dev/console) && exit 0 || kill $jamfHelperPID && echo "Something went wrong" && osascript -e 'text returned of (display dialog "Something went wrong. Please try again." with title "macOS Software Update" buttons {"OK"} default button 1 giving up after 180)' && exit 1
+	echo "$userPW" | /Applications/"$7"/Contents/Resources/startosinstall --agreetolicense --forcequitapps --stdinpass --user $(stat -f %Su /dev/console) && exit 0 || kill $jamfHelperPID && echo "Something went wrong" && osascript -e 'text returned of (display dialog "Something went wrong. Please try again." with title "macOS Software Update" buttons {"OK"} default button 1 giving up after 180)' && exit 1
 	exit 0
 fi
