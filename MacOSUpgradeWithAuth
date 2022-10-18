@@ -3,15 +3,17 @@
 ##########################################################################################################
 ### Create an Encrypted String ###########################################################################
 ### this will be needed to pass credentials securely https://github.com/brysontyrrell/EncryptedStrings ###
+### The Copyright below is to stay in terms of fair use ##################################################
 ##########################################################################################################
 
-###################################################################################
-### JSS Paramaters ################################################################
-### $4 = Username Encrypted String ################################################
-### $5 = Password Encrypted String ################################################
-### $6 = macOS Version | Example: Monterey ########################################
-### $7 = Install macOS path | Example: Install\ macOS\ Monterey.app ###############
-###################################################################################
+##############################################################################################
+### JSS Paramaters ###########################################################################
+### $4 = Username Encrypted String ###########################################################
+### $5 = Password Encrypted String ###########################################################
+### $6 = macOS Version | Example: Monterey ###################################################
+### $7 = Install macOS path | Example: Install macOS Monterey.app ############################
+### $8 = Jamf Helper Window Type | 0 = Fullscreen (default) | 1 = utility (not fullscreen) ###
+##############################################################################################
 
 #################################
 ### String Encrypted Username ###
@@ -26,6 +28,17 @@ UN=$(echo "$4" | /usr/bin/openssl enc -aes256 -md md5 -d -a -A -S "$SALTUN" -k "
 SALTPW=""
 KPW=""
 PW=$(echo "$5" | /usr/bin/openssl enc -aes256 -md md5 -d -a -A -S "$SALTPW" -k "$KPW")
+
+###################################
+### Set Jamf helper window type ###
+###################################
+if [ $8 == 0 ]; then
+	jamfHelperWindowType="fs"
+elif [ $8 == 1 ]; then
+	jamfHelperWindowType="utility"
+else
+	jamfHelperWindowType="fs"
+fi
 
 #########################################
 ### Heading to be used for jamfHelper ###
@@ -46,7 +59,7 @@ icon=/Applications/"$7"/Contents/Resources/InstallAssistant.icns
 #########################
 ### Launch jamfHelper ###
 #########################
-/Library/Application\ Support/JAMF/bin/jamfHelper.app/Contents/MacOS/jamfHelper -windowType utility -title "macOS Software Update" -icon "$icon" -heading "$heading" -description "$description" &
+/Library/Application\ Support/JAMF/bin/jamfHelper.app/Contents/MacOS/jamfHelper -windowType $jamfHelperWindowType -title "macOS Software Update" -icon "$icon" -heading "$heading" -description "$description" &
 
 jamfHelperPID=$!
 
@@ -54,14 +67,14 @@ jamfHelperPID=$!
 ### Start Update ###
 ####################
 	
-#####################################################
-### Try to use credentials passed from Jamf first ###
-#####################################################
-echo "$PW" | /Applications/"$7"/Contents/Resources/startosinstall --agreetolicense --forcequitapps --stdinpass --user $UN && exit 0 || kill $jamfHelperPID && echo "Credentials passed from Jamf could not be authenticated on this Mac." && osascript -e 'text returned of (display dialog "The macOS upgrade requires you to authenticate with your Mac login credentials." with title "macOS Software Update" buttons {"OK"} default button 1 giving up after 180)'
+####################################################
+### Try to use credentials passed from JSS first ###
+####################################################
+echo "$PW" | /Applications/"$7"/Contents/Resources/startosinstall --agreetolicense --forcequitapps --stdinpass --user $UN && exit 0 || kill $jamfHelperPID && echo "Credentials passed from the JSS could not be authenticated on this Mac." && osascript -e 'text returned of (display dialog "The macOS upgrade requires you to authenticate with your Mac login credentials." with title "macOS Software Update" buttons {"OK"} default button 1 giving up after 180)'
 
-##############################################################################
-### Prompt for credentials if the credentials passed from Jamf are invalid ###
-##############################################################################
+##########################
+### Obtain credentials ###
+##########################
 userPW=$(osascript -e '
 display dialog "Please enter your Mac login password." default answer "" with title "Software Update User Authentication" buttons {"Stop","Submit"} default button "Submit" with hidden answer giving up after 180
 if button returned of result is "Submit" then
@@ -80,7 +93,7 @@ else
 	###############################
 	### Launch jamfHelper again ###
 	###############################
-	/Library/Application\ Support/JAMF/bin/jamfHelper.app/Contents/MacOS/jamfHelper -windowType fs -title "macOS Software Update" -icon "$icon" -heading "$heading" -description "$description" &
+	/Library/Application\ Support/JAMF/bin/jamfHelper.app/Contents/MacOS/jamfHelper -windowType $jamfHelperWindowType -title "macOS Software Update" -icon "$icon" -heading "$heading" -description "$description" &
 
 	jamfHelperPID=$!
 	
